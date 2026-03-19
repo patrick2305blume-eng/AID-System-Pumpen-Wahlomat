@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AID-System/Pumpen-Wahlomat DE 2026</title>
+    <title>AID-System/Pumpen-Wahlomat DE</title>
     <style>
         body { font-family: -apple-system, system-ui, sans-serif; background: #121212; color: white; padding: 20px; display: flex; flex-direction: column; align-items: center; margin: 0; }
         .container { max-width: 650px; width: 100%; }
         h1 { color: #5dade2; text-align: center; margin-bottom: 5px; font-size: 24px; }
         .sub-title { text-align: center; color: #888; font-size: 14px; margin-bottom: 30px; }
         .question-card { background: #1e1e1e; padding: 20px; border-radius: 12px; margin-bottom: 15px; border-left: 5px solid #3498db; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .question-text { font-size: 16px; font-weight: 500; }
         .options { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
         button, select { flex: 1; min-width: 90px; padding: 12px; border-radius: 8px; border: 1px solid #444; background: #2c2c2c; color: white; cursor: pointer; font-weight: bold; font-size: 13px; transition: 0.2s; }
         button.active { background: #3498db; border-color: #5dade2; }
@@ -30,18 +29,18 @@
 
 <div class="container">
     <h1>AID-System/Pumpen-Wahlomat</h1>
-    <p class="sub-title">Fokus: Deutschland 2026 (Inkl. Libre 3 Plus Support)</p>
+    <p class="sub-title">Präzise Auswahl basierend auf aktuellen DE-Spezifikationen</p>
 
     <div id="quiz"></div>
 
     <div class="question-card" style="border-left-color: #f1c40f;">
-        <div class="question-text"><strong>Frage 10: Welchen Sensor nutzt du oder möchtest du nutzen?</strong></div>
+        <div class="question-text"><strong>Frage 10: Welchen Sensor möchtest du nutzen?</strong></div>
         <select id="sensor-choice" onchange="updateSensor()">
             <option value="egal">Egal / Kein Wunsch</option>
             <option value="G6">Dexcom G6</option>
-            <option value="G7">Dexcom G7</option>
+            <option value="G7">Dexcom G7 (Nicht Ypso!)</option>
             <option value="L3">FreeStyle Libre 3</option>
-            <option value="L3P">FreeStyle Libre 3 Plus (CamAPS Support)</option>
+            <option value="L3P">FreeStyle Libre 3 Plus</option>
             <option value="G4">Guardian 4 (Medtronic)</option>
             <option value="SIM">Simplera Sync (Medtronic)</option>
             <option value="NANO">Medtrum Nano CGM</option>
@@ -55,7 +54,7 @@
 <script>
 const systems = [
     { name: "Omnipod 5", patch: true, loop: true, handy: false, wasser: true, schwanger: false, batterie: false, zielUnter100: false, vorbefuellt: false, leicht: true, sensors: ["G6", "G7"] },
-    { name: "Ypsopump (CamAPS FX)", patch: false, loop: true, handy: true, wasser: true, schwanger: true, batterie: true, zielUnter100: true, vorbefuellt: true, leicht: true, sensors: ["G6", "G7", "L3", "L3P"] },
+    { name: "Ypsopump (CamAPS FX)", patch: false, loop: true, handy: true, wasser: true, schwanger: true, batterie: true, zielUnter100: true, vorbefuellt: true, leicht: true, sensors: ["G6", "L3", "L3P"] },
     { name: "t:slim X2 (Control-IQ)", patch: false, loop: true, handy: false, wasser: false, schwanger: false, batterie: false, zielUnter100: false, vorbefuellt: false, leicht: false, sensors: ["G6", "G7"] },
     { name: "Medtronic 780G", patch: false, loop: true, handy: false, wasser: true, schwanger: true, batterie: true, zielUnter100: false, vorbefuellt: false, leicht: false, sensors: ["G4", "SIM"] },
     { name: "Dana-i (DBLG1)", patch: false, loop: true, handy: false, wasser: false, schwanger: false, batterie: true, zielUnter100: false, vorbefuellt: false, leicht: true, sensors: ["G6"] },
@@ -68,10 +67,10 @@ const systems = [
 const questions = [
     { id: "loop", text: "Möchtest du ein AID-System (Automatischer Loop)?" },
     { id: "patch", text: "Bevorzugst du eine Patch-Pumpe (schlauchlos)?" },
-    { id: "handy", text: "Vollständige Handy-Steuerung (Bolus & Basal)?" },
-    { id: "wasser", text: "Wasserdichtigkeit der Pumpe wichtig?" },
+    { id: "handy", text: "Steuerung über eigenes Smartphone?" },
+    { id: "wasser", text: "Wasserdichtigkeit wichtig?" },
     { id: "schwanger", text: "Zulassung für Schwangerschaft?" },
-    { id: "batterie", text: "Batterie-Betrieb (AAA) gegenüber Akku?" },
+    { id: "batterie", text: "Batterie-Betrieb (AAA) bevorzugt?" },
     { id: "zielUnter100", text: "Zielwerte unter 100 mg/dl möglich?" },
     { id: "vorbefuellt", text: "Vorbefüllte Reservoire (PumpCarts)?" },
     { id: "leicht", text: "Gewicht unter 100g?" }
@@ -123,11 +122,11 @@ function calculateScore() {
     results.forEach(r => {
         resDiv.innerHTML += `<div class="result-item">
             <span class="percentage">${r.percent}%</span>
-            <span class="loop-tag ${r.loop ? 'is-loop' : 'no-loop'}">${r.loop ? 'AID / Loop' : 'Standardpumpe'}</span>
+            <span class="loop-tag ${r.loop ? 'is-loop' : 'no-loop'}">${r.loop ? 'AID / Loop' : 'Insulinpumpe'}</span>
             <div style="font-size:19px; font-weight:bold; color:#5dade2;">${r.name}</div>
             <div class="details">
-                <strong>Kompatible Sensoren:</strong> ${r.sensors.length > 0 ? r.sensors.join(", ") : "Keine Kopplung"}<br>
-                <strong>Besonderheit:</strong> ${r.name === "Ypsopump (CamAPS FX)" ? "Unterstützt L3 Plus & G7" : "Siehe Herstellerangaben"}
+                <strong>Sensoren (DE):</strong> ${r.sensors.length > 0 ? r.sensors.join(", ") : "Keine direkte Kopplung"}<br>
+                <strong>Handy-Steuerung:</strong> ${r.handy ? 'Ja' : 'Nein (PDM/Pumpe)'}
             </div>
         </div>`;
     });
