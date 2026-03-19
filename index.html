@@ -3,57 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AID-System/Pumpen-Wahlomat</title>
+    <title>AID-System/Pumpen-Wahlomat DE 2026</title>
     <style>
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            background: #121212; color: white; padding: 20px; display: flex; 
-            flex-direction: column; align-items: center; margin: 0; 
-        }
+        body { font-family: -apple-system, system-ui, sans-serif; background: #121212; color: white; padding: 20px; display: flex; flex-direction: column; align-items: center; margin: 0; }
         .container { max-width: 650px; width: 100%; }
-        h1 { color: #5dade2; text-align: center; margin-bottom: 5px; font-size: 26px; }
+        h1 { color: #5dade2; text-align: center; margin-bottom: 5px; font-size: 24px; }
         .sub-title { text-align: center; color: #888; font-size: 14px; margin-bottom: 30px; }
-        
-        .question-card { 
-            background: #1e1e1e; padding: 20px; border-radius: 12px; 
-            margin-bottom: 15px; border-left: 5px solid #3498db; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
-        }
-        .question-text { font-size: 16px; font-weight: 500; margin-bottom: 12px; }
-        
-        .options { display: flex; gap: 8px; flex-wrap: wrap; }
-        button, select { 
-            flex: 1; min-width: 90px; padding: 10px; border-radius: 8px; 
-            border: 1px solid #444; background: #2c2c2c; color: white; 
-            cursor: pointer; font-weight: bold; transition: all 0.2s ease; font-size: 13px;
-        }
-        button.active { background: #3498db; border-color: #5dade2; transform: scale(1.05); }
+        .question-card { background: #1e1e1e; padding: 20px; border-radius: 12px; margin-bottom: 15px; border-left: 5px solid #3498db; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .question-text { font-size: 16px; font-weight: 500; }
+        .options { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+        button, select { flex: 1; min-width: 90px; padding: 12px; border-radius: 8px; border: 1px solid #444; background: #2c2c2c; color: white; cursor: pointer; font-weight: bold; font-size: 13px; transition: 0.2s; }
+        button.active { background: #3498db; border-color: #5dade2; }
         button.important-btn { border-color: #f1c40f; color: #f1c40f; }
-        button.important-btn.active { background: #f1c40f; color: #121212; border-color: white; }
-        
-        select { background: #333; cursor: pointer; border-color: #5dade2; appearance: none; text-align: center; }
-
-        #result-btn { 
-            width: 100%; padding: 20px; background: #2ecc71; 
-            font-size: 18px; font-weight: bold; margin: 30px 0; 
-            border: none; border-radius: 12px; cursor: pointer; color: #121212;
-            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
-        }
-
-        .result-item { 
-            background: #1e1e1e; margin-top: 15px; padding: 20px; 
-            border-radius: 12px; border: 1px solid #333; position: relative; 
-            animation: fadeIn 0.5s ease forwards;
-        }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
+        button.important-btn.active { background: #f1c40f; color: #121212; }
+        select { background: #333; border-color: #5dade2; appearance: none; text-align: center; }
+        #result-btn { width: 100%; padding: 20px; background: #2ecc71; font-size: 18px; font-weight: bold; margin-top: 25px; border: none; border-radius: 12px; cursor: pointer; color: #000; }
+        .result-item { background: #1e1e1e; margin-top: 15px; padding: 20px; border-radius: 12px; border: 1px solid #333; position: relative; }
         .percentage { font-size: 28px; font-weight: bold; color: #2ecc71; position: absolute; right: 20px; top: 20px; }
-        .details { font-size: 14px; color: #aaa; margin-top: 10px; line-height: 1.6; }
-        
-        .loop-tag { 
-            display: inline-block; padding: 3px 10px; border-radius: 6px; 
-            font-size: 11px; text-transform: uppercase; margin-bottom: 8px; font-weight: 800; 
-        }
+        .details { font-size: 14px; color: #aaa; margin-top: 10px; line-height: 1.5; }
+        .loop-tag { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 11px; text-transform: uppercase; margin-bottom: 8px; font-weight: bold; }
         .is-loop { background: #27ae60; color: white; }
         .no-loop { background: #e67e22; color: white; }
     </style>
@@ -62,33 +30,32 @@
 
 <div class="container">
     <h1>AID-System/Pumpen-Wahlomat</h1>
-    <p class="sub-title">Finde dein System basierend auf 10 Kriterien (Stand 2026)</p>
+    <p class="sub-title">Fokus: Deutschland 2026 (Inkl. Libre 3 Plus Support)</p>
 
     <div id="quiz"></div>
 
     <div class="question-card" style="border-left-color: #f1c40f;">
-        <div class="question-text">Frage 10: Welchen CGM-Sensor bevorzugst du? (Wichtige Gewichtung)</div>
+        <div class="question-text"><strong>Frage 10: Welchen Sensor nutzt du oder möchtest du nutzen?</strong></div>
         <select id="sensor-choice" onchange="updateSensor()">
-            <option value="egal">Egal / Kein spezieller Wunsch</option>
+            <option value="egal">Egal / Kein Wunsch</option>
             <option value="G6">Dexcom G6</option>
             <option value="G7">Dexcom G7</option>
             <option value="L3">FreeStyle Libre 3</option>
-            <option value="L3P">FreeStyle Libre 3 Plus</option>
+            <option value="L3P">FreeStyle Libre 3 Plus (CamAPS Support)</option>
             <option value="G4">Guardian 4 (Medtronic)</option>
-            <option value="SIM">Simplera / Simplera Sync</option>
+            <option value="SIM">Simplera Sync (Medtronic)</option>
             <option value="NANO">Medtrum Nano CGM</option>
         </select>
     </div>
 
-    <button id="result-btn" onclick="calculateScore()">Ergebnis berechnen</button>
+    <button id="result-btn" onclick="calculateScore()">Auswertung berechnen</button>
     <div id="results"></div>
 </div>
 
 <script>
-// Datenmatrix
 const systems = [
-    { name: "Omnipod 5", patch: true, loop: true, handy: false, wasser: true, schwanger: false, batterie: false, zielUnter100: false, vorbefuellt: false, leicht: true, sensors: ["G6", "G7", "L3P"] },
-    { name: "Ypsopump (CamAPS FX)", patch: false, loop: true, handy: true, wasser: true, schwanger: true, batterie: true, zielUnter100: true, vorbefuellt: true, leicht: true, sensors: ["G6", "G7", "L3"] },
+    { name: "Omnipod 5", patch: true, loop: true, handy: false, wasser: true, schwanger: false, batterie: false, zielUnter100: false, vorbefuellt: false, leicht: true, sensors: ["G6", "G7"] },
+    { name: "Ypsopump (CamAPS FX)", patch: false, loop: true, handy: true, wasser: true, schwanger: true, batterie: true, zielUnter100: true, vorbefuellt: true, leicht: true, sensors: ["G6", "G7", "L3", "L3P"] },
     { name: "t:slim X2 (Control-IQ)", patch: false, loop: true, handy: false, wasser: false, schwanger: false, batterie: false, zielUnter100: false, vorbefuellt: false, leicht: false, sensors: ["G6", "G7"] },
     { name: "Medtronic 780G", patch: false, loop: true, handy: false, wasser: true, schwanger: true, batterie: true, zielUnter100: false, vorbefuellt: false, leicht: false, sensors: ["G4", "SIM"] },
     { name: "Dana-i (DBLG1)", patch: false, loop: true, handy: false, wasser: false, schwanger: false, batterie: true, zielUnter100: false, vorbefuellt: false, leicht: true, sensors: ["G6"] },
@@ -100,33 +67,30 @@ const systems = [
 
 const questions = [
     { id: "loop", text: "Möchtest du ein AID-System (Automatischer Loop)?" },
-    { id: "patch", text: "Soll es eine Patch-Pumpe (schlauchlos) sein?" },
-    { id: "handy", text: "Steuerung über dein eigenes Smartphone (Bolus/Basal)?" },
-    { id: "wasser", text: "Ist dir Wasserdichtigkeit wichtig?" },
-    { id: "schwanger", text: "Zulassung für Schwangerschaft nötig?" },
-    { id: "batterie", text: "Batterie-Betrieb (AAA) bevorzugt (statt Akku)?" },
-    { id: "zielUnter100", text: "Zielwerte unter 100 mg/dl einstellbar?" },
-    { id: "vorbefuellt", text: "Vorbefüllte Reservoire (z.B. PumpCart)?" },
-    { id: "leicht", text: "Gewicht unter 100g (Pumpe vollgefüllt)?" }
+    { id: "patch", text: "Bevorzugst du eine Patch-Pumpe (schlauchlos)?" },
+    { id: "handy", text: "Vollständige Handy-Steuerung (Bolus & Basal)?" },
+    { id: "wasser", text: "Wasserdichtigkeit der Pumpe wichtig?" },
+    { id: "schwanger", text: "Zulassung für Schwangerschaft?" },
+    { id: "batterie", text: "Batterie-Betrieb (AAA) gegenüber Akku?" },
+    { id: "zielUnter100", text: "Zielwerte unter 100 mg/dl möglich?" },
+    { id: "vorbefuellt", text: "Vorbefüllte Reservoire (PumpCarts)?" },
+    { id: "leicht", text: "Gewicht unter 100g?" }
 ];
 
 const userAnswers = {};
 let selectedSensor = "egal";
-
 const quizContainer = document.getElementById('quiz');
+
 questions.forEach(q => {
     userAnswers[q.id] = { value: null, weight: 0 };
     const div = document.createElement('div');
     div.className = 'question-card';
-    div.innerHTML = `
-        <div class="question-text">${q.text}</div>
-        <div class="options">
-            <button onclick="setAnswer('${q.id}', true, this, 1)">Ja</button>
-            <button class="important-btn" onclick="setAnswer('${q.id}', true, this, 3)">Wichtig!</button>
-            <button onclick="setAnswer('${q.id}', false, this, 1)">Nein</button>
-            <button class="active" onclick="setAnswer('${q.id}', null, this, 0)">Egal</button>
-        </div>
-    `;
+    div.innerHTML = `<div class="question-text">${q.text}</div><div class="options">
+        <button onclick="setAnswer('${q.id}', true, this, 1)">Ja</button>
+        <button class="important-btn" onclick="setAnswer('${q.id}', true, this, 3)">Wichtig!</button>
+        <button onclick="setAnswer('${q.id}', false, this, 1)">Nein</button>
+        <button class="active" onclick="setAnswer('${q.id}', null, this, 0)">Egal</button>
+    </div>`;
     quizContainer.appendChild(div);
 });
 
@@ -137,49 +101,35 @@ function setAnswer(id, val, btn, weight) {
     btn.classList.add('active');
 }
 
-function updateSensor() {
-    selectedSensor = document.getElementById('sensor-choice').value;
-}
+function updateSensor() { selectedSensor = document.getElementById('sensor-choice').value; }
 
 function calculateScore() {
     let results = systems.map(sys => {
-        let matchedPoints = 0;
-        let totalPoints = 0;
-
+        let matchedPoints = 0, totalPoints = 0;
         for (let key in userAnswers) {
-            const answer = userAnswers[key];
-            if (answer.weight > 0) {
-                totalPoints += answer.weight;
-                if (sys[key] === answer.value) matchedPoints += answer.weight;
-            }
+            const a = userAnswers[key];
+            if (a.weight > 0) { totalPoints += a.weight; if (sys[key] === a.value) matchedPoints += a.weight; }
         }
-
         if (selectedSensor !== "egal") {
-            totalPoints += 3; // Sensor-Wahl wird immer hoch gewichtet
+            totalPoints += 3;
             if (sys.sensors.includes(selectedSensor)) matchedPoints += 3;
         }
-
-        let percent = totalPoints === 0 ? 0 : (matchedPoints / totalPoints) * 100;
-        return { ...sys, percent: Math.round(percent) };
+        return { ...sys, percent: totalPoints === 0 ? 0 : Math.round((matchedPoints / totalPoints) * 100) };
     });
 
     results.sort((a, b) => b.percent - a.percent);
-    
     const resDiv = document.getElementById('results');
-    resDiv.innerHTML = '<h2 style="border-top:1px solid #333; padding-top:20px;">Deine Auswertung:</h2>';
-    
+    resDiv.innerHTML = '<h2 style="margin-top:20px; border-top:1px solid #444; padding-top:15px;">Ergebnis-Ranking:</h2>';
     results.forEach(r => {
-        resDiv.innerHTML += `
-            <div class="result-item">
-                <span class="percentage">${r.percent}%</span>
-                <span class="loop-tag ${r.loop ? 'is-loop' : 'no-loop'}">${r.loop ? 'AID / Loop' : 'Insulinpumpe'}</span>
-                <div style="font-size:20px; font-weight:bold; color:#5dade2;">${r.name}</div>
-                <div class="details">
-                    <strong>Kompatibel mit:</strong> ${r.sensors.length > 0 ? r.sensors.join(", ") : "Manueller Betrieb"}<br>
-                    <strong>Bauform:</strong> ${r.patch ? 'Patch-Pumpe' : 'Schlauch-System'}
-                </div>
+        resDiv.innerHTML += `<div class="result-item">
+            <span class="percentage">${r.percent}%</span>
+            <span class="loop-tag ${r.loop ? 'is-loop' : 'no-loop'}">${r.loop ? 'AID / Loop' : 'Standardpumpe'}</span>
+            <div style="font-size:19px; font-weight:bold; color:#5dade2;">${r.name}</div>
+            <div class="details">
+                <strong>Kompatible Sensoren:</strong> ${r.sensors.length > 0 ? r.sensors.join(", ") : "Keine Kopplung"}<br>
+                <strong>Besonderheit:</strong> ${r.name === "Ypsopump (CamAPS FX)" ? "Unterstützt L3 Plus & G7" : "Siehe Herstellerangaben"}
             </div>
-        `;
+        </div>`;
     });
     resDiv.scrollIntoView({ behavior: 'smooth' });
 }
