@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AID-System/Pumpen-Wahlomat DE</title>
+    <title>AID-System/Pumpen-Wahlomat DE 2026</title>
     <style>
         body { font-family: -apple-system, system-ui, sans-serif; background: #121212; color: white; padding: 20px; display: flex; flex-direction: column; align-items: center; margin: 0; }
         .container { max-width: 650px; width: 100%; }
@@ -18,7 +18,10 @@
         select { background: #333; border-color: #5dade2; appearance: none; text-align: center; }
         #result-btn { width: 100%; padding: 20px; background: #2ecc71; font-size: 18px; font-weight: bold; margin-top: 25px; border: none; border-radius: 12px; cursor: pointer; color: #000; }
         .result-item { background: #1e1e1e; margin-top: 15px; padding: 20px; border-radius: 12px; border: 1px solid #333; position: relative; }
-        .percentage { font-size: 28px; font-weight: bold; color: #2ecc71; position: absolute; right: 20px; top: 20px; }
+        /* Anpassung für die Prozentanzeige mit Text */
+        .percentage { font-size: 18px; font-weight: bold; color: #2ecc71; position: absolute; right: 20px; top: 20px; text-align: right; line-height: 1.2; }
+        .percent-big { font-size: 28px; display: block; }
+        
         .details { font-size: 14px; color: #aaa; margin-top: 10px; line-height: 1.5; }
         .loop-tag { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 11px; text-transform: uppercase; margin-bottom: 8px; font-weight: bold; }
         .is-loop { background: #27ae60; color: white; }
@@ -29,7 +32,7 @@
 
 <div class="container">
     <h1>AID-System/Pumpen-Wahlomat</h1>
-    <p class="sub-title">Präzise Auswahl basierend auf aktuellen DE-Spezifikationen</p>
+    <p class="sub-title">Finde dein System – Stand Deutschland März 2026</p>
 
     <div id="quiz"></div>
 
@@ -38,7 +41,7 @@
         <select id="sensor-choice" onchange="updateSensor()">
             <option value="egal">Egal / Kein Wunsch</option>
             <option value="G6">Dexcom G6</option>
-            <option value="G7">Dexcom G7 (Nicht Ypso!)</option>
+            <option value="G7">Dexcom G7 (Wichtig: Nicht für Ypsopump!)</option>
             <option value="L3">FreeStyle Libre 3</option>
             <option value="L3P">FreeStyle Libre 3 Plus</option>
             <option value="G4">Guardian 4 (Medtronic)</option>
@@ -53,27 +56,27 @@
 
 <script>
 const systems = [
-    { name: "Omnipod 5", patch: true, loop: true, handy: false, wasser: true, schwanger: false, batterie: false, zielUnter100: false, vorbefuellt: false, leicht: true, sensors: ["G6", "G7"] },
-    { name: "Ypsopump (CamAPS FX)", patch: false, loop: true, handy: true, wasser: true, schwanger: true, batterie: true, zielUnter100: true, vorbefuellt: true, leicht: true, sensors: ["G6", "L3", "L3P"] },
-    { name: "t:slim X2 (Control-IQ)", patch: false, loop: true, handy: false, wasser: false, schwanger: false, batterie: false, zielUnter100: false, vorbefuellt: false, leicht: false, sensors: ["G6", "G7"] },
-    { name: "Medtronic 780G", patch: false, loop: true, handy: false, wasser: true, schwanger: true, batterie: true, zielUnter100: false, vorbefuellt: false, leicht: false, sensors: ["G4", "SIM"] },
-    { name: "Dana-i (DBLG1)", patch: false, loop: true, handy: false, wasser: false, schwanger: false, batterie: true, zielUnter100: false, vorbefuellt: false, leicht: true, sensors: ["G6"] },
-    { name: "Kaleido (DBLG1)", patch: true, loop: true, handy: false, wasser: false, schwanger: false, batterie: false, zielUnter100: false, vorbefuellt: false, leicht: true, sensors: ["G6"] },
-    { name: "Medtrum Nano (EasyLoop)", patch: true, loop: true, handy: true, wasser: true, schwanger: false, batterie: false, zielUnter100: false, vorbefuellt: false, leicht: true, sensors: ["NANO"] },
-    { name: "Dana-i (Basis)", patch: false, loop: false, handy: true, wasser: false, schwanger: false, batterie: true, zielUnter100: false, vorbefuellt: false, leicht: true, sensors: [] },
-    { name: "Omnipod DASH", patch: true, loop: false, handy: false, wasser: true, schwanger: false, batterie: false, zielUnter100: false, vorbefuellt: false, leicht: true, sensors: [] }
+    { name: "Omnipod 5", patch: true, loop: true, handy: false, wasser: true, schwanger: false, batterie: false, zielUnter100: false, vorbefuellt: false, leicht: true, sensors: ["G6", "G7"], note: "Schlauchloses Patch-System" },
+    { name: "Ypsopump (CamAPS FX)", patch: false, loop: true, handy: true, wasser: true, schwanger: true, batterie: true, zielUnter100: true, vorbefuellt: true, leicht: true, sensors: ["G6", "L3", "L3P"], note: "Handy-Loop mit Libre 3/3+ Support" },
+    { name: "t:slim X2 (Control-IQ)", patch: false, loop: true, handy: false, wasser: false, schwanger: false, batterie: false, zielUnter100: false, vorbefuellt: false, leicht: false, sensors: ["G6", "G7"], note: "Touch-Bedienung & Dexcom G7" },
+    { name: "Medtronic 780G", patch: false, loop: true, handy: false, wasser: true, schwanger: true, batterie: true, zielUnter100: false, vorbefuellt: false, leicht: false, sensors: ["G4", "SIM"], note: "Einfaches System mit Simplera Sync" },
+    { name: "Dana-i (DBLG1)", patch: false, loop: true, handy: false, wasser: false, schwanger: false, batterie: true, zielUnter100: false, vorbefuellt: false, leicht: true, sensors: ["G6"], note: "Kombination mit DBLG1 Algorithmus" },
+    { name: "Kaleido (DBLG1)", patch: true, loop: true, handy: false, wasser: false, schwanger: false, batterie: false, zielUnter100: false, vorbefuellt: false, leicht: true, sensors: ["G6"], note: "Bunte Hybrid-Patch-Pumpe" },
+    { name: "Medtrum Nano (EasyLoop)", patch: true, loop: true, handy: true, wasser: true, schwanger: false, batterie: false, zielUnter100: false, vorbefuellt: false, leicht: true, sensors: ["NANO"], note: "Sehr kleiner Nano-Patch" },
+    { name: "Dana-i (Basis)", patch: false, loop: false, handy: true, wasser: false, schwanger: false, batterie: true, zielUnter100: false, vorbefuellt: false, leicht: true, sensors: [], note: "Standardpumpe (Kein AID)" },
+    { name: "Omnipod DASH", patch: true, loop: false, handy: false, wasser: true, schwanger: false, batterie: false, zielUnter100: false, vorbefuellt: false, leicht: true, sensors: [], note: "Bewährtes Patch-System" }
 ];
 
 const questions = [
     { id: "loop", text: "Möchtest du ein AID-System (Automatischer Loop)?" },
     { id: "patch", text: "Bevorzugst du eine Patch-Pumpe (schlauchlos)?" },
-    { id: "handy", text: "Steuerung über eigenes Smartphone?" },
-    { id: "wasser", text: "Wasserdichtigkeit wichtig?" },
-    { id: "schwanger", text: "Zulassung für Schwangerschaft?" },
-    { id: "batterie", text: "Batterie-Betrieb (AAA) bevorzugt?" },
-    { id: "zielUnter100", text: "Zielwerte unter 100 mg/dl möglich?" },
-    { id: "vorbefuellt", text: "Vorbefüllte Reservoire (PumpCarts)?" },
-    { id: "leicht", text: "Gewicht unter 100g?" }
+    { id: "handy", text: "Vollständige Bolus-Steuerung über das Smartphone?" },
+    { id: "wasser", text: "Wasserdichtigkeit der Pumpe (IPX8) wichtig?" },
+    { id: "schwanger", text: "Zulassung für Schwangerschaft benötigt?" },
+    { id: "batterie", text: "Betrieb mit AAA-Batterie bevorzugt?" },
+    { id: "zielUnter100", text: "Sollen Zielwerte unter 100 mg/dl möglich sein?" },
+    { id: "vorbefuellt", text: "Möchtest du vorbefüllte Reservoire nutzen?" },
+    { id: "leicht", text: "Soll die Pumpe besonders leicht sein?" }
 ];
 
 const userAnswers = {};
@@ -107,7 +110,10 @@ function calculateScore() {
         let matchedPoints = 0, totalPoints = 0;
         for (let key in userAnswers) {
             const a = userAnswers[key];
-            if (a.weight > 0) { totalPoints += a.weight; if (sys[key] === a.value) matchedPoints += a.weight; }
+            if (a.weight > 0) { 
+                totalPoints += a.weight; 
+                if (sys[key] === a.value) matchedPoints += a.weight; 
+            }
         }
         if (selectedSensor !== "egal") {
             totalPoints += 3;
@@ -118,15 +124,15 @@ function calculateScore() {
 
     results.sort((a, b) => b.percent - a.percent);
     const resDiv = document.getElementById('results');
-    resDiv.innerHTML = '<h2 style="margin-top:20px; border-top:1px solid #444; padding-top:15px;">Ergebnis-Ranking:</h2>';
+    resDiv.innerHTML = '<h2 style="margin-top:20px; border-top:1px solid #444; padding-top:15px;">Dein Ranking:</h2>';
     results.forEach(r => {
         resDiv.innerHTML += `<div class="result-item">
-            <span class="percentage">${r.percent}%</span>
-            <span class="loop-tag ${r.loop ? 'is-loop' : 'no-loop'}">${r.loop ? 'AID / Loop' : 'Insulinpumpe'}</span>
-            <div style="font-size:19px; font-weight:bold; color:#5dade2;">${r.name}</div>
+            <div class="percentage"><span class="percent-big">${r.percent}%</span> Übereinstimmung</div>
+            <span class="loop-tag ${r.loop ? 'is-loop' : 'no-loop'}">${r.loop ? 'AID / Loop' : 'Standardpumpe'}</span>
+            <div style="font-size:19px; font-weight:bold; color:#5dade2; padding-right:100px;">${r.name}</div>
             <div class="details">
-                <strong>Sensoren (DE):</strong> ${r.sensors.length > 0 ? r.sensors.join(", ") : "Keine direkte Kopplung"}<br>
-                <strong>Handy-Steuerung:</strong> ${r.handy ? 'Ja' : 'Nein (PDM/Pumpe)'}
+                <strong>Kompatible Sensoren:</strong> ${r.sensors.length > 0 ? r.sensors.join(", ") : "Keine Kopplung"}<br>
+                <strong>Zusammenfassung:</strong> ${r.note}
             </div>
         </div>`;
     });
