@@ -12,11 +12,14 @@
         
         .question-card { background: #1e1e1e; padding: 15px; border-radius: 12px; margin-bottom: 12px; border-left: 5px solid #3498db; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         .question-text { font-weight: bold; font-size: 15px; margin-bottom: 10px; display: block; }
-        .options { display: flex; gap: 8px; }
+        .options { display: flex; gap: 8px; flex-wrap: wrap; }
         
         button, select, input { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #444; background: #2c2c2c; color: white; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.2s; }
         button.active { background: #3498db; border-color: #5dade2; }
-        input { cursor: text; text-align: center; }
+        
+        /* Input Styling passend zu den Buttons */
+        input { cursor: text; text-align: center; border-color: #444; outline: none; }
+        input:focus { border-color: #5dade2; background: #333; }
         
         select { background: #333; border-color: #5dade2; appearance: none; text-align: center; }
         #result-btn { width: 100%; padding: 20px; background: #2ecc71; font-size: 18px; font-weight: bold; border: none; border-radius: 12px; margin-top: 25px; cursor: pointer; color: black; }
@@ -39,7 +42,7 @@
         .percent-label { font-size: 10px; color: #2ecc71; text-transform: uppercase; margin-top: 4px; }
 
         .details { font-size: 13px; color: #aaa; margin-top: 8px; line-height: 1.4; }
-        .warning { color: #e74c3c; font-weight: bold; font-size: 11px; margin-top: 5px; display: block; }
+        .warning { color: #ff4d4d; font-weight: bold; font-size: 12px; margin-top: 5px; display: block; }
         .loop-tag { display: inline-block; padding: 3px 7px; border-radius: 4px; font-size: 10px; text-transform: uppercase; margin-bottom: 5px; font-weight: bold; background: #27ae60; color: white; }
         .no-loop { background: #e67e22; }
     </style>
@@ -48,19 +51,19 @@
 
 <div class="container">
     <h1>AID-System Wahlomat</h1>
-    <p class="sub-title">Finde deine passende Insulinpumpe</p>
+    <p class="sub-title">Präzise Analyse DE 2026</p>
 
     <div class="question-card" style="border-left-color: #9b59b6;">
-        <span class="question-text">Basis-Check: Alter & Insulinverbrauch</span>
-        <div class="options" style="flex-direction: column; gap: 12px;">
-            <div>
-                <label style="font-size: 12px; color: #aaa;">Alter der Person:</label>
-                <input type="number" id="user-age" placeholder="Jahre" min="0">
-            </div>
-            <div>
-                <label style="font-size: 12px; color: #aaa;">Tages-Gesamt-Insulin (Ø):</label>
-                <input type="number" id="user-tdd" placeholder="Einheiten (IE)" min="0">
-            </div>
+        <span class="question-text">Wie alt bist du? (Zulassungs-Check)</span>
+        <div class="options">
+            <input type="number" id="user-age" placeholder="Alter in Jahren eingeben...">
+        </div>
+    </div>
+
+    <div class="question-card" style="border-left-color: #9b59b6;">
+        <span class="question-text">Täglicher Insulinbedarf (Ø Gesamt-Einheiten)?</span>
+        <div class="options">
+            <input type="number" id="user-tdd" placeholder="Einheiten (IE) eingeben...">
         </div>
     </div>
 
@@ -87,19 +90,26 @@
 </div>
 
 <script>
-// minAge: Mindestalter laut Zulassung
-// maxTDD: Maximaler Tagesverbrauch (Reservoir 3 Tage)
-// minTDD: Minimaler Tagesverbrauch (Loop-Stabilität)
+/**
+ * RECHARCHIERTE DATEN 2026:
+ * Omnipod 5: Ab 2 J. | Min 5 IE/Tag (Loop-Stabi) | Max ~65 IE/Tag (Reservoir-Limit)
+ * Ypsopump: Ab 0 J. (CamAPS) | Min 5 IE/Tag | Max 50 IE/Tag (Kleines Reservoir)
+ * t:slim X2: Ab 6 J. | Min 10 IE/Tag | Max 100 IE/Tag (300 IE Reservoir)
+ * Medtronic 780G: Ab 7 J. | Min 8 IE/Tag | Max 100 IE/Tag
+ * Dana-i DBLG1: Ab 18 J. | Min 8 IE/Tag | Max 100 IE/Tag
+ * Kaleido DBLG1: Ab 18 J. | Min 8 IE/Tag | Max 65 IE/Tag
+ * Medtrum Nano: Ab 2 J. | Min 2 IE/Tag | Max 65 IE/Tag
+ */
 const systems = [
-    { name: "Omnipod 5", patch: true, loop: true, handy: false, wasser: true, schwanger: false, batterie: false, zielUnter100: false, vorbefuellt: false, leicht: true, sensors: ["G6", "G7"], minAge: 2, maxTDD: 65, minTDD: 5, note: "Reservoir: 200IE / 3 Tage" },
-    { name: "Ypsopump (CamAPS FX)", patch: false, loop: true, handy: true, wasser: true, schwanger: true, batterie: true, zielUnter100: true, vorbefuellt: true, leicht: true, sensors: ["G6", "L3", "L3P"], minAge: 0, maxTDD: 50, minTDD: 5, note: "CamAPS ab 0 Jahren, Reservoir: 160IE" },
-    { name: "t:slim X2 (Control-IQ)", patch: false, loop: true, handy: false, wasser: false, schwanger: false, batterie: false, zielUnter100: false, vorbefuellt: false, leicht: false, sensors: ["G6", "G7"], minAge: 6, maxTDD: 100, minTDD: 10, note: "Reservoir: 300IE / 3 Tage" },
-    { name: "Medtronic 780G", patch: false, loop: true, handy: false, wasser: true, schwanger: true, batterie: true, zielUnter100: false, vorbefuellt: false, leicht: false, sensors: ["G4", "SIM"], minAge: 7, maxTDD: 100, minTDD: 8, note: "Reservoir: 300IE" },
-    { name: "Dana-i (DBLG1)", patch: false, loop: true, handy: false, wasser: false, schwanger: false, batterie: true, zielUnter100: false, vorbefuellt: false, leicht: true, sensors: ["G6"], minAge: 18, maxTDD: 100, minTDD: 8, note: "DBLG1-Algorithmus erst ab 18" },
-    { name: "Kaleido (DBLG1)", patch: true, loop: true, handy: false, wasser: false, schwanger: false, batterie: false, zielUnter100: false, vorbefuellt: false, leicht: true, sensors: ["G6"], minAge: 18, maxTDD: 65, minTDD: 8, note: "Hybrid-Patch, DBLG1 erst ab 18" },
-    { name: "Medtrum Nano (EasyLoop)", patch: true, loop: true, handy: true, wasser: true, schwanger: false, batterie: false, zielUnter100: false, vorbefuellt: false, leicht: true, sensors: ["NANO"], minAge: 2, maxTDD: 65, minTDD: 2, note: "Sehr kleiner 200IE Patch" },
-    { name: "Dana-i (Basis)", patch: false, loop: false, handy: true, wasser: false, schwanger: false, batterie: true, zielUnter100: false, vorbefuellt: false, leicht: true, sensors: [], minAge: 0, maxTDD: 100, minTDD: 0, note: "Standard ohne Loop-Einschränkung" },
-    { name: "Omnipod DASH", patch: true, loop: false, handy: false, wasser: true, schwanger: false, batterie: false, zielUnter100: false, vorbefuellt: false, leicht: true, sensors: [], minAge: 2, maxTDD: 65, minTDD: 0, note: "Patch ohne Loop-Einschränkung" }
+    { name: "Omnipod 5", patch: true, loop: true, handy: false, wasser: true, schwanger: false, batterie: false, zielUnter100: false, vorbefuellt: false, leicht: true, sensors: ["G6", "G7"], minAge: 2, minTDD: 5, maxTDD: 65, note: "Schlauchloses Patch-System" },
+    { name: "Ypsopump (CamAPS FX)", patch: false, loop: true, handy: true, wasser: true, schwanger: true, batterie: true, zielUnter100: true, vorbefuellt: true, leicht: true, sensors: ["G6", "L3", "L3P"], minAge: 0, minTDD: 5, maxTDD: 50, note: "Handy-Loop (Libre 3 Support)" },
+    { name: "t:slim X2 (Control-IQ)", patch: false, loop: true, handy: false, wasser: false, schwanger: false, batterie: false, zielUnter100: false, vorbefuellt: false, leicht: false, sensors: ["G6", "G7"], minAge: 6, minTDD: 10, maxTDD: 100, note: "Touchscreen & G7 Support" },
+    { name: "Medtronic 780G", patch: false, loop: true, handy: false, wasser: true, schwanger: true, batterie: true, zielUnter100: false, vorbefuellt: false, leicht: false, sensors: ["G4", "SIM"], minAge: 7, minTDD: 8, maxTDD: 100, note: "Integrierter Simplera Sync" },
+    { name: "Dana-i (DBLG1)", patch: false, loop: true, handy: false, wasser: false, schwanger: false, batterie: true, zielUnter100: false, vorbefuellt: false, leicht: true, sensors: ["G6"], minAge: 18, minTDD: 8, maxTDD: 100, note: "DBLG1 erst ab 18 Jahren" },
+    { name: "Kaleido (DBLG1)", patch: true, loop: true, handy: false, wasser: false, schwanger: false, batterie: false, zielUnter100: false, vorbefuellt: false, leicht: true, sensors: ["G6"], minAge: 18, minTDD: 8, maxTDD: 65, note: "Hybrid-Patch-Pumpe" },
+    { name: "Medtrum Nano (EasyLoop)", patch: true, loop: true, handy: true, wasser: true, schwanger: false, batterie: false, zielUnter100: false, vorbefuellt: false, leicht: true, sensors: ["NANO"], minAge: 2, minTDD: 2, maxTDD: 65, note: "Sehr kleiner Nano-Patch" },
+    { name: "Dana-i (Basis)", patch: false, loop: false, handy: true, wasser: false, schwanger: false, batterie: true, zielUnter100: false, vorbefuellt: false, leicht: true, sensors: [], minAge: 0, minTDD: 0, maxTDD: 100, note: "Keine Loop-Einschränkung" },
+    { name: "Omnipod DASH", patch: true, loop: false, handy: false, wasser: true, schwanger: false, batterie: false, zielUnter100: false, vorbefuellt: false, leicht: true, sensors: [], minAge: 2, minTDD: 0, maxTDD: 65, note: "Keine Loop-Einschränkung" }
 ];
 
 const questions = [
@@ -137,67 +147,35 @@ function setAns(id, val, btn) {
 
 function calculateScore() {
     const selS = document.getElementById('sensor-choice').value;
-    const userAge = parseInt(document.getElementById('user-age').value) || null;
-    const userTDD = parseInt(document.getElementById('user-tdd').value) || null;
+    const age = parseInt(document.getElementById('user-age').value);
+    const tdd = parseInt(document.getElementById('user-tdd').value);
 
     let res = systems.map(s => {
         let m = 0, t = 0;
         let warnings = [];
 
-        // Check Alter
-        if (userAge !== null && userAge < s.minAge) {
-            warnings.push(`Ab ${s.minAge} Jahren zugelassen`);
+        // Check Alter & Insulin
+        if (!isNaN(age) && age < s.minAge) warnings.push(`Erst ab ${s.minAge} J. zugelassen`);
+        if (!isNaN(tdd)) {
+            if (tdd < s.minTDD && s.loop) warnings.push(`Verbrauch zu niedrig für Loop`);
+            if (tdd > s.maxTDD) warnings.push(`Verbrauch zu hoch für Reservoir`);
         }
 
-        // Check Insulinmenge
-        if (userTDD !== null) {
-            if (userTDD > s.maxTDD) warnings.push(`TDD zu hoch (max ${s.maxTDD} IE)`);
-            if (userTDD < s.minTDD) warnings.push(`TDD zu niedrig für Loop`);
-        }
-
-        // Standard Fragen Score
         for (let k in userAnswers) {
             if (userAnswers[k] !== null) {
                 t++;
                 if (s[k] === userAnswers[k]) m++;
             }
         }
-
-        // Sensor Score
         if (selS !== "egal") {
             t++;
             if (s.sensors.includes(selS)) m++;
         }
-
-        let score = t === 0 ? 100 : Math.round((m/t)*100);
         
-        // Strafe für harte Ausschlusskriterien (Warnings)
-        if (warnings.length > 0) score = Math.max(0, score - 40);
+        let score = t === 0 ? 100 : Math.round((m/t)*100);
+        // Harter Abzug bei unpassenden Grundvoraussetzungen
+        if (warnings.length > 0) score = Math.max(0, score - 50);
 
-        return { ...s, p: score, warnings: warnings };
-    }).sort((a,b) => b.p - a.p);
-
-    const out = document.getElementById('results');
-    out.innerHTML = '<h2 style="text-align:center; margin-top:20px;">Dein Ergebnis:</h2>';
-    
-    res.forEach(r => {
-        const warningHTML = r.warnings.map(w => `<span class="warning">⚠️ ${w}</span>`).join("");
-        out.innerHTML += `
-        <div class="result-item" style="${r.warnings.length > 0 ? 'opacity: 0.7;' : ''}">
-            <div class="result-content">
-                <span class="loop-tag ${r.loop ? '' : 'no-loop'}">${r.loop ? 'AID / LOOP' : 'PUMPE'}</span>
-                <div class="system-name">${r.name}</div>
-                <div class="details">Sensoren: ${r.sensors.length > 0 ? r.sensors.join(", ") : "Keine"}<br>Info: ${r.note}</div>
-                ${warningHTML}
-            </div>
-            <div class="percentage-box">
-                <span class="percent-big">${r.p}%</span>
-                <span class="percent-label">Match</span>
-            </div>
-        </div>`;
-    });
-    out.scrollIntoView({ behavior: 'smooth' });
-}
-</script>
-</body>
-</html>
+        return { ...s, p: score, w: warnings };
+    }).sort((a,b)
+        
