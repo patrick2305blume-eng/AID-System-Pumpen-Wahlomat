@@ -6,47 +6,44 @@
     <title>AID-System Wahlomat 2026</title>
     <style>
         body { font-family: -apple-system, system-ui, sans-serif; background: #121212; color: white; padding: 15px; margin: 0; display: flex; flex-direction: column; align-items: center; }
-        .container { max-width: 600px; width: 100%; padding-bottom: 50px; }
-        h1 { color: #5dade2; text-align: center; font-size: 22px; margin-bottom: 5px; }
-        .sub-title { text-align: center; color: #888; font-size: 13px; margin-bottom: 25px; }
+        .container { max-width: 600px; width: 100%; padding-bottom: 80px; }
+        h1 { color: #5dade2; text-align: center; font-size: 24px; margin-bottom: 5px; }
+        .sub-title { text-align: center; color: #888; font-size: 14px; margin-bottom: 25px; }
         
-        .question-card { background: #1e1e1e; padding: 15px; border-radius: 12px; margin-bottom: 12px; border-left: 5px solid #3498db; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .question-text { font-weight: bold; font-size: 15px; margin-bottom: 10px; display: block; }
-        .options { display: flex; gap: 8px; flex-wrap: wrap; }
+        .question-card { background: #1e1e1e; padding: 20px; border-radius: 15px; margin-bottom: 15px; border-left: 6px solid #3498db; box-shadow: 0 6px 15px rgba(0,0,0,0.4); }
+        .question-text { font-weight: bold; font-size: 16px; margin-bottom: 12px; display: block; }
+        .options { display: flex; gap: 10px; flex-wrap: wrap; }
         
-        button, select, input { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #444; background: #2c2c2c; color: white; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.2s; min-width: 80px; }
-        button.active { background: #3498db; border-color: #5dade2; }
-        input { cursor: text; text-align: center; outline: none; }
+        button, select, input { flex: 1; padding: 14px; border-radius: 10px; border: 1px solid #444; background: #2c2c2c; color: white; font-weight: bold; cursor: pointer; font-size: 15px; transition: 0.3s; }
+        button.active { background: #3498db; border-color: #5dade2; box-shadow: 0 0 10px rgba(52, 152, 219, 0.5); }
+        input { text-align: center; outline: none; }
         input:focus { border-color: #5dade2; background: #333; }
         
-        select { background: #333; border-color: #5dade2; appearance: none; text-align: center; }
-        #result-btn { width: 100%; padding: 20px; background: #2ecc71; font-size: 18px; font-weight: bold; border: none; border-radius: 12px; margin: 25px 0; cursor: pointer; color: black; }
+        #result-btn { width: 100%; padding: 22px; background: #2ecc71; font-size: 20px; font-weight: bold; border: none; border-radius: 15px; margin: 30px 0; cursor: pointer; color: black; transition: transform 0.2s; }
+        #result-btn:active { transform: scale(0.98); }
 
-        .result-item { 
-            background: #1e1e1e; margin-top: 15px; padding: 18px; 
-            border-radius: 12px; border: 1px solid #333;
-            display: grid; grid-template-columns: 1fr 110px; align-items: center; gap: 15px;
-        }
-        .result-content { min-width: 0; }
-        .system-name { font-size: 18px; font-weight: bold; color: #5dade2; margin: 4px 0; }
-        .details { font-size: 12px; color: #aaa; margin-top: 4px; line-height: 1.4; }
-        .warning { color: #ff4d4d; font-weight: bold; font-size: 12px; margin-top: 5px; display: block; }
-        .loop-tag { display: inline-block; padding: 3px 7px; border-radius: 4px; font-size: 10px; text-transform: uppercase; font-weight: bold; background: #27ae60; color: white; margin-bottom: 4px; }
+        .result-item { background: #1e1e1e; margin-top: 15px; padding: 20px; border-radius: 15px; border: 1px solid #333; display: grid; grid-template-columns: 1fr 100px; align-items: center; gap: 15px; }
+        .system-name { font-size: 20px; font-weight: bold; color: #5dade2; margin-bottom: 5px; }
+        .details { font-size: 13px; color: #bbb; line-height: 1.5; }
+        .warning-box { margin-top: 8px; border-top: 1px solid #444; padding-top: 8px; }
+        .warning { color: #ff4d4d; font-weight: bold; font-size: 12px; display: block; margin-top: 3px; }
+        .loop-tag { display: inline-block; padding: 4px 8px; border-radius: 5px; font-size: 11px; font-weight: bold; background: #27ae60; color: white; margin-bottom: 8px; }
         .no-loop { background: #e67e22; }
+        .match-percent { font-size: 28px; font-weight: bold; color: #2ecc71; text-align: right; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>AID-System Wahlomat</h1>
-    <p class="sub-title">Vollständiger Check (Inkl. Alter & Insulinmengen)</p>
+    <p class="sub-title">Präzisions-Check: Alle Systeme & 12 Kriterien</p>
 
     <div class="question-card" style="border-left-color: #9b59b6;">
-        <span class="question-text">1. Wie alt ist der Anwender?</span>
+        <span class="question-text">1. Alter des Anwenders?</span>
         <div class="options"><input type="number" id="user-age" placeholder="Jahre"></div>
     </div>
     <div class="question-card" style="border-left-color: #9b59b6;">
-        <span class="question-text">2. Täglicher Insulinbedarf (Gesamt IE)?</span>
+        <span class="question-text">2. Gesamt-Insulinbedarf pro Tag (IE)?</span>
         <div class="options"><input type="number" id="user-tdd" placeholder="Einheiten"></div>
     </div>
 
@@ -59,8 +56,8 @@
                 <option value="egal">Egal / Kein Wunsch</option>
                 <option value="G6">Dexcom G6</option>
                 <option value="G7">Dexcom G7</option>
-                <option value="L3">FreeStyle Libre 3</option>
-                <option value="L3P">FreeStyle Libre 3 Plus</option>
+                <option value="L3">Libre 3</option>
+                <option value="L3P">Libre 3 Plus</option>
                 <option value="G4">Guardian 4</option>
                 <option value="SIM">Simplera Sync</option>
                 <option value="NANO">Medtrum Nano CGM</option>
@@ -68,12 +65,11 @@
         </div>
     </div>
 
-    <button id="result-btn" onclick="calculateScore()">Ergebnis anzeigen</button>
+    <button id="result-btn" onclick="calculateScore()">Ergebnis berechnen</button>
     <div id="results"></div>
 </div>
 
 <script>
-// Komplette Datenbank aller 10 Pumpen mit allen Details
 const systems = [
     { name: "Omnipod 5", patch: true, loop: true, handy: false, wasser: true, schwanger: false, batterie: false, ziel100: false, vorbefuellt: false, leicht: true, sensors: ["G6", "G7"], minAge: 2, minTDD: 5, maxTDD: 65, info: "Schlauchloses Patch-System" },
     { name: "Ypsopump (CamAPS FX)", patch: false, loop: true, handy: true, wasser: true, schwanger: true, batterie: true, ziel100: true, vorbefuellt: true, leicht: true, sensors: ["G6", "L3", "L3P"], minAge: 0, minTDD: 5, maxTDD: 50, info: "Handy-Loop mit Libre 3 Support" },
@@ -128,14 +124,12 @@ function calculateScore() {
         let totalCount = 0;
         let warnings = [];
 
-        // 1. Alter & Insulin (Harte Ausschlusskriterien)
-        if (!isNaN(age) && age < s.minAge) warnings.push(`Ab ${s.minAge} J.`);
+        if (!isNaN(age) && age < s.minAge) warnings.push(`⚠️ Zulassung erst ab ${s.minAge} Jahren`);
         if (!isNaN(tdd)) {
-            if (tdd < s.minTDD && s.loop) warnings.push(`IE zu niedrig für Loop`);
-            if (tdd > s.maxTDD) warnings.push(`IE zu hoch für Reservoir`);
+            if (tdd < s.minTDD && s.loop) warnings.push(`⚠️ Insulinbedarf zu niedrig für Loop-Stabilität`);
+            if (tdd > s.maxTDD) warnings.push(`⚠️ Bedarf zu hoch für Reservoir (${s.maxTDD} IE Limit)`);
         }
         
-        // 2. Matching Fragen 3-11
         for (let key in userAnswers) {
             if (userAnswers[key] !== null) {
                 totalCount++;
@@ -143,35 +137,36 @@ function calculateScore() {
             }
         }
         
-        // 3. Sensor Matching (Frage 12)
         if (selS !== "egal") {
             totalCount++;
             if (s.sensors.includes(selS)) matchCount++;
+            else warnings.push(`⚠️ Nicht kompatibel mit ${selS}`);
         }
 
-        let score = totalCount === 0 ? 100 : Math.round((matchCount / totalCount) * 100);
-        
-        // Strafe bei Warnungen
-        if (warnings.length > 0) score = Math.max(0, score - (warnings.length * 40));
+        let score = totalCount === 0 ? 100 : (matchCount / totalCount) * 100;
+        if (warnings.length > 0) score = Math.max(0, score - (warnings.length * 30));
 
         return { ...s, score, warnings };
     }).sort((a,b) => b.score - a.score);
 
     const out = document.getElementById('results');
-    out.innerHTML = '<h2>Ergebnis:</h2>';
+    out.innerHTML = '<h2 style="text-align:center; margin-top:30px;">Detaillierte Auswertung:</h2>';
     results.forEach(r => {
         out.innerHTML += `
-        <div class="result-item" style="${r.warnings.length > 0 ? 'opacity: 0.7;' : ''}">
+        <div class="result-item" style="${r.warnings.length > 0 ? 'border-color: #ff4d4d;' : ''}">
             <div class="result-content">
-                <span class="loop-tag ${r.loop ? '' : 'no-loop'}">${r.loop ? 'AID / LOOP' : 'PUMPE'}</span>
+                <span class="loop-tag ${r.loop ? '' : 'no-loop'}">${r.loop ? 'AID / LOOP' : 'BASIS PUMPE'}</span>
                 <div class="system-name">${r.name}</div>
-                <div class="details">Sensoren: ${r.sensors.length > 0 ? r.sensors.join(", ") : "Keine"}<br>${r.info}</div>
-                ${r.warnings.map(w => `<span class="warning">⚠️ ${w}</span>`).join("")}
+                <div class="details">
+                    <strong>Kompatibel:</strong> ${r.sensors.length > 0 ? r.sensors.join(", ") : "Keine Kopplung"}<br>
+                    <strong>Info:</strong> ${r.info}
+                </div>
+                <div class="warning-box">
+                    ${r.warnings.map(w => `<span class="warning">${w}</span>`).join("")}
+                    ${r.warnings.length === 0 ? '<span style="color:#2ecc71; font-size:12px;">✓ Alle medizinischen Voraussetzungen erfüllt</span>' : ''}
+                </div>
             </div>
-            <div style="text-align:right">
-                <span style="font-size:26px; font-weight:bold">${r.score}%</span><br>
-                <span style="font-size:10px; color:#2ecc71">Match</span>
-            </div>
+            <div class="match-percent">${Math.round(r.score)}%</div>
         </div>`;
     });
 }
