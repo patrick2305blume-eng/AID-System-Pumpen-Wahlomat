@@ -7,25 +7,19 @@
     <style>
         html, body { height: auto; min-height: 100%; margin: 0; padding: 0; background: #121212; color: white; overflow-x: hidden; }
         body { font-family: -apple-system, system-ui, sans-serif; display: flex; flex-direction: column; align-items: center; padding: 15px; }
-        
         .container { max-width: 600px; width: 100%; padding-bottom: 80px; }
         h1 { color: #5dade2; text-align: center; font-size: 24px; margin-bottom: 5px; }
         .sub-title { text-align: center; color: #888; font-size: 13px; margin-bottom: 25px; }
-        
         .question-card { background: #1e1e1e; padding: 18px; border-radius: 12px; margin-bottom: 12px; border-left: 6px solid #3498db; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
         .question-text { font-weight: bold; font-size: 15px; margin-bottom: 12px; display: block; }
         .options { display: flex; gap: 8px; flex-wrap: wrap; }
-        
         button, select, input { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #444; background: #2c2c2c; color: white; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.2s; min-width: 80px; }
         button.active { background: #3498db; border-color: #5dade2; }
         input { text-align: center; outline: none; cursor: text; }
         input:focus { border-color: #5dade2; background: #333; }
-        
         select { background: #333; border-color: #5dade2; appearance: none; text-align: center; width: 100%; }
-        
         #result-btn { width: 100%; padding: 20px; background: #2ecc71; font-size: 18px; font-weight: bold; border: none; border-radius: 12px; margin: 25px 0; cursor: pointer; color: black; }
-
-        .result-item { background: #1e1e1e; margin-top: 15px; padding: 18px; border-radius: 12px; border: 1px solid #333; display: grid; grid-template-columns: 1fr 90px; align-items: center; gap: 15px; transition: 0.3s; }
+        .result-item { background: #1e1e1e; margin-top: 15px; padding: 18px; border-radius: 12px; border: 1px solid #333; display: grid; grid-template-columns: 1fr 90px; align-items: center; gap: 15px; }
         .system-name { font-size: 19px; font-weight: bold; color: #5dade2; margin-bottom: 4px; }
         .details { font-size: 12px; color: #aaa; line-height: 1.4; }
         .warning-box { margin-top: 8px; padding-top: 8px; border-top: 1px solid #333; }
@@ -39,11 +33,11 @@
 
 <div class="container">
     <h1>AID-System Wahlomat</h1>
-    <p class="sub-title">Präzisions-Check für alle 10 Systeme</p>
+    <p class="sub-title">Präzisions-Check (12 Faktoren)</p>
 
     <div class="question-card" style="border-left-color: #9b59b6;">
         <span class="question-text">1. Alter des Anwenders?</span>
-        <div class="options"><input type="number" id="user-age" placeholder="Jahre eingeben"></div>
+        <div class="options"><input type="number" id="user-age" placeholder="Jahre"></div>
     </div>
 
     <div class="question-card" style="border-left-color: #9b59b6;">
@@ -125,53 +119,53 @@ function calculateScore() {
 
     let results = systems.map(s => {
         let matchCount = 0;
-        let totalCount = 0;
+        let totalPossible = 0;
         let warnings = [];
 
-        // Medizinischer Check
-        if (!isNaN(age) && age < s.minAge) warnings.push(`⚠️ Zulassung erst ab ${s.minAge} Jahren`);
+        // 1. Alter (1 Punkt)
+        totalPossible++;
+        if (!isNaN(age)) {
+            if (age >= s.minAge) matchCount++;
+            else warnings.push(`⚠️ Zulassung erst ab ${s.minAge} Jahren`);
+        } else { matchCount++; }
+
+        // 2. Insulin (1 Punkt)
+        totalPossible++;
         if (!isNaN(tdd)) {
-            if (tdd < s.minTDD && s.loop) warnings.push(`⚠️ Bedarf zu niedrig für Loop (${s.minTDD} IE Min)`);
-            if (tdd > s.maxTDD) warnings.push(`⚠️ Bedarf zu hoch für Reservoir (${s.maxTDD} IE Max)`);
-        }
-        
-        // Match Fragen 3-11
-        for (let key in userAnswers) {
-            if (userAnswers[key] !== null) {
-                totalCount++;
-                if (s[key] === userAnswers[key]) matchCount++;
+            let ok = true;
+            if (tdd < s.minTDD && s.loop) { ok = false; warnings.push(`⚠️ Bedarf zu niedrig für Loop (${s.minTDD} IE Min)`); }
+            if (tdd > s.maxTDD) { ok = false; warnings.push(`⚠️ Bedarf zu hoch für Reservoir (${s.maxTDD} IE Max)`); }
+            if (ok) matchCount++;
+        } else { matchCount++; }
+
+        // 3-11. Fragen
+        questions.forEach(q => {
+            if (userAnswers[q.id] !== null) {
+                totalPossible++;
+                if (s[q.id] === userAnswers[q.id]) matchCount++;
             }
-        }
-        
-        // Sensor Check (Frage 12)
+        });
+
+        // 12. Sensor
+        totalPossible++;
         if (selS !== "egal") {
-            totalCount++;
             if (s.sensors.includes(selS)) matchCount++;
             else warnings.push(`⚠️ Nicht kompatibel mit ${selS}`);
-        }
+        } else { matchCount++; }
 
-        // PRÄZISE BERECHNUNG
-        let score = totalCount === 0 ? 100 : (matchCount / totalCount) * 100;
-        
-        // Strafe bei medizinischen Warnungen (rutschen nach unten)
-        if (warnings.length > 0) score = Math.max(0, score - (warnings.length * 20));
-
+        let score = (matchCount / totalPossible) * 100;
         return { ...s, score, warnings };
     }).sort((a,b) => b.score - a.score);
 
     const out = document.getElementById('results');
     out.innerHTML = '<h2 style="text-align:center; margin-top:30px;">Detaillierte Auswertung:</h2>';
-    
     results.forEach(r => {
         out.innerHTML += `
-        <div class="result-item" style="${r.warnings.length > 0 ? 'border-color: #ff4d4d; opacity: 0.8;' : 'border-color: #333;'}">
+        <div class="result-item" style="${r.warnings.length > 0 ? 'border-color: #ff4d4d;' : 'border-color: #333;'}">
             <div class="result-content">
                 <span class="loop-tag ${r.loop ? '' : 'no-loop'}">${r.loop ? 'AID / LOOP' : 'BASIS PUMPE'}</span>
                 <div class="system-name">${r.name}</div>
-                <div class="details">
-                    <strong>Kompatibel:</strong> ${r.sensors.length > 0 ? r.sensors.join(", ") : "Keine Kopplung"}<br>
-                    <strong>Info:</strong> ${r.info}
-                </div>
+                <div class="details"><strong>Kompatibel:</strong> ${r.sensors.length > 0 ? r.sensors.join(", ") : "Keine"}<br><strong>Info:</strong> ${r.info}</div>
                 <div class="warning-box">
                     ${r.warnings.map(w => `<span class="warning">${w}</span>`).join("")}
                     ${r.warnings.length === 0 ? '<span style="color:#2ecc71; font-size:11px;">✓ Alle Voraussetzungen erfüllt</span>' : ''}
