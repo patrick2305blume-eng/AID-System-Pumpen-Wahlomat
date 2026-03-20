@@ -5,15 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AID-System Wahlomat 2026</title>
     <style>
-        /* Verhindert das Abschneiden der Seite */
-        html, body { height: auto; min-height: 100%; margin: 0; padding: 0; background: #121212; color: white; }
-        body { font-family: -apple-system, system-ui, sans-serif; display: flex; flex-direction: column; align-items: center; padding: 15px; }
-        
-        .container { max-width: 600px; width: 100%; padding-bottom: 100px; } /* Platz für Ergebnisse unten */
+        body { font-family: -apple-system, system-ui, sans-serif; background: #121212; color: white; padding: 15px; margin: 0; display: flex; flex-direction: column; align-items: center; }
+        .container { max-width: 600px; width: 100%; padding-bottom: 50px; }
         h1 { color: #5dade2; text-align: center; font-size: 22px; margin-bottom: 5px; }
         .sub-title { text-align: center; color: #888; font-size: 13px; margin-bottom: 25px; }
         
-        .question-card { background: #1e1e1e; padding: 15px; border-radius: 12px; margin-bottom: 15px; border-left: 5px solid #3498db; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .question-card { background: #1e1e1e; padding: 15px; border-radius: 12px; margin-bottom: 12px; border-left: 5px solid #3498db; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         .question-text { font-weight: bold; font-size: 15px; margin-bottom: 10px; display: block; }
         .options { display: flex; gap: 8px; flex-wrap: wrap; }
         
@@ -23,25 +20,31 @@
         input:focus { border-color: #5dade2; background: #333; }
         
         select { background: #333; border-color: #5dade2; appearance: none; text-align: center; }
-        #result-btn { width: 100%; padding: 20px; background: #2ecc71; font-size: 18px; font-weight: bold; border: none; border-radius: 12px; margin: 20px 0; cursor: pointer; color: black; }
+        #result-btn { width: 100%; padding: 20px; background: #2ecc71; font-size: 18px; font-weight: bold; border: none; border-radius: 12px; margin: 25px 0; cursor: pointer; color: black; }
 
-        .result-item { background: #1e1e1e; margin-top: 15px; padding: 18px; border-radius: 12px; border: 1px solid #333; display: grid; grid-template-columns: 1fr 100px; align-items: center; gap: 15px; }
-        .system-name { font-size: 18px; font-weight: bold; color: #5dade2; }
-        .warning { color: #ff4d4d; font-weight: bold; font-size: 12px; display: block; margin-top: 5px; }
-        .loop-tag { display: inline-block; padding: 3px 7px; border-radius: 4px; font-size: 10px; font-weight: bold; background: #27ae60; margin-bottom: 5px; }
+        .result-item { 
+            background: #1e1e1e; margin-top: 15px; padding: 18px; 
+            border-radius: 12px; border: 1px solid #333;
+            display: grid; grid-template-columns: 1fr 110px; align-items: center; gap: 15px;
+        }
+        .result-content { min-width: 0; }
+        .system-name { font-size: 18px; font-weight: bold; color: #5dade2; margin: 4px 0; }
+        .details { font-size: 12px; color: #aaa; margin-top: 4px; line-height: 1.4; }
+        .warning { color: #ff4d4d; font-weight: bold; font-size: 12px; margin-top: 5px; display: block; }
+        .loop-tag { display: inline-block; padding: 3px 7px; border-radius: 4px; font-size: 10px; text-transform: uppercase; font-weight: bold; background: #27ae60; color: white; margin-bottom: 4px; }
+        .no-loop { background: #e67e22; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>AID-System Wahlomat</h1>
-    <p class="sub-title">12 Kriterien Check (Inkl. Alter & Insulin)</p>
+    <p class="sub-title">Vollständiger Check (Inkl. Alter & Insulinmengen)</p>
 
     <div class="question-card" style="border-left-color: #9b59b6;">
         <span class="question-text">1. Wie alt ist der Anwender?</span>
         <div class="options"><input type="number" id="user-age" placeholder="Jahre"></div>
     </div>
-
     <div class="question-card" style="border-left-color: #9b59b6;">
         <span class="question-text">2. Täglicher Insulinbedarf (Gesamt IE)?</span>
         <div class="options"><input type="number" id="user-tdd" placeholder="Einheiten"></div>
@@ -53,13 +56,14 @@
         <span class="question-text">12. Bevorzugter CGM-Sensor?</span>
         <div class="options">
             <select id="sensor-choice">
-                <option value="egal">Egal</option>
+                <option value="egal">Egal / Kein Wunsch</option>
                 <option value="G6">Dexcom G6</option>
                 <option value="G7">Dexcom G7</option>
-                <option value="L3">Libre 3</option>
-                <option value="L3P">Libre 3 Plus</option>
+                <option value="L3">FreeStyle Libre 3</option>
+                <option value="L3P">FreeStyle Libre 3 Plus</option>
                 <option value="G4">Guardian 4</option>
                 <option value="SIM">Simplera Sync</option>
+                <option value="NANO">Medtrum Nano CGM</option>
             </select>
         </div>
     </div>
@@ -69,21 +73,27 @@
 </div>
 
 <script>
+// Komplette Datenbank aller 10 Pumpen mit allen Details
 const systems = [
-    { name: "Omnipod 5", patch: true, loop: true, handy: false, wasser: true, schwanger: false, batterie: false, ziel100: false, vorbefuellt: false, leicht: true, sensors: ["G6", "G7"], minAge: 2, minTDD: 5, maxTDD: 65 },
-    { name: "Ypsopump (CamAPS)", patch: false, loop: true, handy: true, wasser: true, schwanger: true, batterie: true, ziel100: true, vorbefuellt: true, leicht: true, sensors: ["G6", "L3", "L3P"], minAge: 0, minTDD: 5, maxTDD: 54 },
-    { name: "t:slim X2", patch: false, loop: true, handy: false, wasser: false, schwanger: false, batterie: false, ziel100: false, vorbefuellt: false, leicht: false, sensors: ["G6", "G7"], minAge: 6, minTDD: 10, maxTDD: 100 },
-    { name: "Medtronic 780G", patch: false, loop: true, handy: false, wasser: true, schwanger: true, batterie: true, ziel100: false, vorbefuellt: false, leicht: false, sensors: ["G4", "SIM"], minAge: 7, minTDD: 8, maxTDD: 100 },
-    { name: "Dana-i (DBLG1)", patch: false, loop: true, handy: false, wasser: false, schwanger: false, batterie: true, ziel100: false, vorbefuellt: false, leicht: true, sensors: ["G6"], minAge: 18, minTDD: 8, maxTDD: 90 }
+    { name: "Omnipod 5", patch: true, loop: true, handy: false, wasser: true, schwanger: false, batterie: false, ziel100: false, vorbefuellt: false, leicht: true, sensors: ["G6", "G7"], minAge: 2, minTDD: 5, maxTDD: 65, info: "Schlauchloses Patch-System" },
+    { name: "Ypsopump (CamAPS FX)", patch: false, loop: true, handy: true, wasser: true, schwanger: true, batterie: true, ziel100: true, vorbefuellt: true, leicht: true, sensors: ["G6", "L3", "L3P"], minAge: 0, minTDD: 5, maxTDD: 50, info: "Handy-Loop mit Libre 3 Support" },
+    { name: "t:slim X2 (Control-IQ)", patch: false, loop: true, handy: false, wasser: false, schwanger: false, batterie: false, ziel100: false, vorbefuellt: false, leicht: false, sensors: ["G6", "G7"], minAge: 6, minTDD: 10, maxTDD: 100, info: "Touch-Bedienung & Dexcom G7" },
+    { name: "Medtronic 780G", patch: false, loop: true, handy: false, wasser: true, schwanger: true, batterie: true, ziel100: false, vorbefuellt: false, leicht: false, sensors: ["G4", "SIM"], minAge: 7, minTDD: 8, maxTDD: 100, info: "Einfaches System mit Simplera Sync" },
+    { name: "Dana-i (DBLG1)", patch: false, loop: true, handy: false, wasser: false, schwanger: false, batterie: true, ziel100: false, vorbefuellt: false, leicht: true, sensors: ["G6"], minAge: 18, minTDD: 8, maxTDD: 95, info: "Kombination mit DBLG1 Algorithmus" },
+    { name: "Kaleido (DBLG1)", patch: true, loop: true, handy: false, wasser: false, schwanger: false, batterie: false, ziel100: false, vorbefuellt: false, leicht: true, sensors: ["G6"], minAge: 18, minTDD: 8, maxTDD: 65, info: "Kompakte Hybrid-Patch-Pumpe" },
+    { name: "Medtrum Nano (EasyLoop)", patch: true, loop: true, handy: true, wasser: true, schwanger: false, batterie: false, ziel100: false, vorbefuellt: false, leicht: true, sensors: ["NANO"], minAge: 2, minTDD: 2, maxTDD: 65, info: "Sehr kleiner Nano-Patch" },
+    { name: "Omnipod DASH", patch: true, loop: false, handy: false, wasser: true, schwanger: false, batterie: false, ziel100: false, vorbefuellt: false, leicht: true, sensors: [], minAge: 2, minTDD: 0, maxTDD: 65, info: "Manuelles Patch-System" },
+    { name: "Dana-i (Basis)", patch: false, loop: false, handy: true, wasser: false, schwanger: false, batterie: true, ziel100: false, vorbefuellt: false, leicht: true, sensors: [], minAge: 0, minTDD: 0, maxTDD: 100, info: "Standardpumpe (Kein AID)" },
+    { name: "Medtronic 740G", patch: false, loop: false, handy: false, wasser: true, schwanger: true, batterie: true, ziel100: false, vorbefuellt: false, leicht: false, sensors: ["G4"], minAge: 0, minTDD: 0, maxTDD: 100, info: "Basispumpe mit Hypo-Schutz" }
 ];
 
 const questions = [
     { id: "loop", text: "3. Möchtest du einen automatischen Loop (AID)?" },
-    { id: "patch", text: "4. Soll die Pumpe schlauchlos (Patch) sein?" },
+    { id: "patch", text: "4. Bevorzugst du eine Patch-Pumpe (schlauchlos)?" },
     { id: "handy", text: "5. Bolus-Steuerung über das Smartphone?" },
-    { id: "wasser", text: "6. Wasserdichtigkeit wichtig?" },
-    { id: "schwanger", text: "7. Zulassung für Schwangerschaft?" },
-    { id: "batterie", text: "8. Betrieb mit AAA-Batterie?" },
+    { id: "wasser", text: "6. Wasserdichtigkeit der Pumpe wichtig?" },
+    { id: "schwanger", text: "7. Zulassung für Schwangerschaft benötigt?" },
+    { id: "batterie", text: "8. Betrieb mit AAA-Batterie bevorzugt?" },
     { id: "ziel100", text: "9. Zielwerte unter 100 mg/dl möglich?" },
     { id: "vorbefuellt", text: "10. Vorbefüllte Reservoire nutzen?" },
     { id: "leicht", text: "11. Sehr geringes Gewicht (< 100g)?" }
@@ -113,29 +123,57 @@ function calculateScore() {
     const tdd = parseInt(document.getElementById('user-tdd').value);
     const selS = document.getElementById('sensor-choice').value;
 
-    let res = systems.map(s => {
-        let m = 0, t = 0, w = [];
-        if (!isNaN(age) && age < s.minAge) w.push(`Ab ${s.minAge} J.`);
-        if (!isNaN(tdd) && tdd > s.maxTDD) w.push(`Max ${s.maxTDD} IE/Tag`);
-        
-        for (let k in userAnswers) {
-            if (userAnswers[k] !== null) { t++; if (s[k] === userAnswers[k]) m++; }
+    let results = systems.map(s => {
+        let matchCount = 0;
+        let totalCount = 0;
+        let warnings = [];
+
+        // 1. Alter & Insulin (Harte Ausschlusskriterien)
+        if (!isNaN(age) && age < s.minAge) warnings.push(`Ab ${s.minAge} J.`);
+        if (!isNaN(tdd)) {
+            if (tdd < s.minTDD && s.loop) warnings.push(`IE zu niedrig für Loop`);
+            if (tdd > s.maxTDD) warnings.push(`IE zu hoch für Reservoir`);
         }
-        let score = t === 0 ? 100 : Math.round((m/t)*100);
-        if (w.length > 0) score = Math.max(0, score - 50);
-        return { ...s, p: score, w: w };
-    }).sort((a,b) => b.p - a.p);
+        
+        // 2. Matching Fragen 3-11
+        for (let key in userAnswers) {
+            if (userAnswers[key] !== null) {
+                totalCount++;
+                if (s[key] === userAnswers[key]) matchCount++;
+            }
+        }
+        
+        // 3. Sensor Matching (Frage 12)
+        if (selS !== "egal") {
+            totalCount++;
+            if (s.sensors.includes(selS)) matchCount++;
+        }
+
+        let score = totalCount === 0 ? 100 : Math.round((matchCount / totalCount) * 100);
+        
+        // Strafe bei Warnungen
+        if (warnings.length > 0) score = Math.max(0, score - (warnings.length * 40));
+
+        return { ...s, score, warnings };
+    }).sort((a,b) => b.score - a.score);
 
     const out = document.getElementById('results');
     out.innerHTML = '<h2>Ergebnis:</h2>';
-    res.forEach(r => {
-        out.innerHTML += `<div class="result-item">
-            <div><span class="loop-tag">AID</span><div class="system-name">${r.name}</div>
-            ${r.w.map(warn => `<span class="warning">⚠️ ${warn}</span>`).join("")}</div>
-            <div style="text-align:right"><span style="font-size:24px; font-weight:bold">${r.p}%</span></div>
+    results.forEach(r => {
+        out.innerHTML += `
+        <div class="result-item" style="${r.warnings.length > 0 ? 'opacity: 0.7;' : ''}">
+            <div class="result-content">
+                <span class="loop-tag ${r.loop ? '' : 'no-loop'}">${r.loop ? 'AID / LOOP' : 'PUMPE'}</span>
+                <div class="system-name">${r.name}</div>
+                <div class="details">Sensoren: ${r.sensors.length > 0 ? r.sensors.join(", ") : "Keine"}<br>${r.info}</div>
+                ${r.warnings.map(w => `<span class="warning">⚠️ ${w}</span>`).join("")}
+            </div>
+            <div style="text-align:right">
+                <span style="font-size:26px; font-weight:bold">${r.score}%</span><br>
+                <span style="font-size:10px; color:#2ecc71">Match</span>
+            </div>
         </div>`;
     });
-    out.scrollIntoView({ behavior: 'smooth' });
 }
 </script>
 </body>
